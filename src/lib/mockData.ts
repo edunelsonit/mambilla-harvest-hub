@@ -61,6 +61,24 @@ export const PRODUCTS = [
     location: 'Mayo-Ndaga',
     image: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/9f1dc251-c63c-4e58-9764-635d156d943a/mambilla-beans-f13997a3-1782246911313.webp',
     description: 'Nutritious mixed beans from local smallholder farms.'
+  },
+  {
+    id: '8',
+    name: 'Mambilla Wild Honey',
+    category: 'Natural Products',
+    price: '₦3,500 / liter',
+    location: 'Gembu Forest',
+    image: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/9f1dc251-c63c-4e58-9764-635d156d943a/mambilla-wild-honey-480b11b6-1782351359750.webp',
+    description: '100% pure organic honey harvested from the deep forests of the plateau.'
+  },
+  {
+    id: '9',
+    name: 'Highland Cabbage',
+    category: 'Vegetables',
+    price: '₦800 / head',
+    location: 'Maisamari',
+    image: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/9f1dc251-c63c-4e58-9764-635d156d943a/highland-cabbage-00175339-1782351359541.webp',
+    description: 'Vibrant, crunchy cabbages grown in the cool mists of Mambilla.'
   }
 ];
 
