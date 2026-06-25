@@ -1,19 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Home, Menu, Bell, User, CloudOff } from 'lucide-react';
+import { Menu, Bell, CloudOff, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { AuthModal } from './AuthModal';
 
 interface LayoutProps {
   children: React.ReactNode;
   role: string;
   onHome: () => void;
+  currentPage?: string;
+  onNavigate?: (page: string) => void;
 }
 
-export const Layout = ({ children, role, onHome }: LayoutProps) => {
+export const Layout = ({ children, role, onHome, currentPage = 'home', onNavigate }: LayoutProps) => {
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
+
+  const handleNavigate = (page: string) => {
+    if (onNavigate) {
+      onNavigate(page);
+    }
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={onHome}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleNavigate('home')}>
             <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center text-white font-black text-xl italic">
               G
             </div>
@@ -21,10 +36,10 @@ export const Layout = ({ children, role, onHome }: LayoutProps) => {
           </div>
 
           <nav className="hidden md:flex items-center gap-6">
-            <button onClick={onHome} className="text-sm font-medium hover:text-primary transition-colors">Home</button>
-            <button className="text-sm font-medium hover:text-primary transition-colors">Marketplace</button>
-            <button className="text-sm font-medium hover:text-primary transition-colors">Transport</button>
-            <button className="text-sm font-medium hover:text-primary transition-colors">About</button>
+            <button onClick={() => handleNavigate('home')} className={`text-sm font-medium transition-colors ${currentPage === 'home' ? 'text-primary' : 'hover:text-primary'}`}>Home</button>
+            <button onClick={() => handleNavigate('marketplace')} className={`text-sm font-medium transition-colors ${currentPage === 'marketplace' ? 'text-primary' : 'hover:text-primary'}`}>Marketplace</button>
+            <button onClick={() => handleNavigate('transport')} className={`text-sm font-medium transition-colors ${currentPage === 'transport' ? 'text-primary' : 'hover:text-primary'}`}>Transport</button>
+            <button onClick={() => handleNavigate('about')} className={`text-sm font-medium transition-colors ${currentPage === 'about' ? 'text-primary' : 'hover:text-primary'}`}>About</button>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -35,14 +50,38 @@ export const Layout = ({ children, role, onHome }: LayoutProps) => {
               <Bell size={20} />
               <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-background" />
             </Button>
-            <Button variant="ghost" size="icon">
-              <User size={20} />
-            </Button>
-            <Button variant="ghost" size="icon" className="md:hidden">
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:block text-right">
+                  <div className="text-sm font-medium">{profile?.full_name}</div>
+                  <div className="text-xs text-muted-foreground capitalize">{profile?.role}</div>
+                </div>
+                <Button variant="ghost" size="icon" onClick={signOut} title="Sign Out">
+                  <LogOut size={20} />
+                </Button>
+              </div>
+            ) : (
+              <Button variant="default" size="sm" onClick={() => setAuthModalOpen(true)}>
+                Sign In
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               <Menu size={20} />
             </Button>
           </div>
         </div>
+        
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t bg-background">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
+              <button onClick={() => handleNavigate('home')} className="text-left text-sm font-medium py-2 hover:text-primary">Home</button>
+              <button onClick={() => handleNavigate('marketplace')} className="text-left text-sm font-medium py-2 hover:text-primary">Marketplace</button>
+              <button onClick={() => handleNavigate('transport')} className="text-left text-sm font-medium py-2 hover:text-primary">Transport</button>
+              <button onClick={() => handleNavigate('about')} className="text-left text-sm font-medium py-2 hover:text-primary">About</button>
+            </nav>
+          </div>
+        )}
       </header>
       
       <div className="flex-1">
@@ -94,6 +133,7 @@ export const Layout = ({ children, role, onHome }: LayoutProps) => {
           © {new Date().getFullYear()} Gefoun Marketplace. Built for the Mambilla Plateau.
         </div>
       </footer>
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   );
 };
